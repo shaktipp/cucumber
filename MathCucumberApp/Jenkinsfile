@@ -4,6 +4,8 @@ def v_bitbucketBranchName = 'develop'
 def v_pomFilePath = 'MathCucumberApp/pom.xml'
 def v_imageName = 'shaktipp/mathcucumber-image'
 def v_dockerfilePath = 'MathCucumberApp/dmp/docker'
+def v_successNotification = 'shaktiprasadapanda@fico.com';
+def v_failNotification = 'shaktiprasadapanda@fico.com,shaktipp@gmail.com';
 
 
 ///////////////////////////////////////////////PLEASE DONT EDIT/DELETE BELOW CODE//////////////////////////////////////////////////////
@@ -61,6 +63,12 @@ pipeline {
 				sh "mvn -f ${v_pomFilePath} sonar:sonar"
 			}
 		}
+		
+		stage('BDD') {
+			steps {
+				sh "mvn -f ${v_pomFilePath} verify"
+			}
+		}
 
 		stage('Build Image') {
 			steps {				
@@ -88,5 +96,22 @@ pipeline {
 		
 
 	}//End of stages	
+	post{
+		success {
+            mail to: "${v_successNotification}",
+            subject: "Success Jenkins Build: ${currentBuild.fullDisplayName}",
+            body: "Build is Successful, URL : ${env.BUILD_URL}"
+        }
+        unstable {
+            mail to: "${v_failNotification}",
+            subject: "Unstable Jenkins Build: ${currentBuild.fullDisplayName}",
+            body: "Build is Unstable due to a few error, URL : ${env.BUILD_URL}"
+        failure {
+            mail to: "${v_failNotification}",
+            subject: "Failed Jenkins Build: ${currentBuild.fullDisplayName}",
+            body: "Something is wrong with Pipeline Build , URL : ${env.BUILD_URL}"
+        }
+	
+	}//End of post
 		
-}
+}//End of Pipeline

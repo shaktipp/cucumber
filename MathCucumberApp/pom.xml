@@ -238,7 +238,7 @@
 				<executions>
 					<execution>
 						<id>Cucumber-Report</id>
-						<phase>integration-test</phase>
+						<phase>verify</phase>
 						<goals>
 							<goal>generate</goal>
 						</goals>

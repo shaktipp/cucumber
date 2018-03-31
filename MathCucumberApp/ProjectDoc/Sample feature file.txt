@@ -1,0 +1,25 @@
+Feature: Math Calculation for addition, subtraction, multiplication and division
+
+Scenario: Scenario1: Validate add operation with the HTTP Status Code
+When the client calls GET /math/add/20/10
+Then the client receives response status code of 200
+
+Scenario: Scenario2: Validate add operation result with the HTTP Status Code
+When the client calls GET "/math/add/{num1}/{num2}" with num1 as 30 and num2 as 20
+Then the client receives output of addition operation response status code of 200
+And match $ == 50
+
+Scenario: Scenario3: Validate subtract operation result with the HTTP Status Code
+When the client calls GET "/math/sub/{num1}/{num2}" with num1 as 100 and num2 as 51
+Then the client receives output of subtraction operation response status code of 200
+And match $ == 49
+
+Scenario: Scenario4: Validate multiplication operation result with the HTTP Status Code
+When the client calls GET "/math/mul/{num1}/{num2}" with num1 as 40 and num2 as 30
+Then the client receives output of multipication operation response status code of 200
+And match $ == 1200
+
+Scenario: Scenario4: Validate divide operation result with the HTTP Status Code
+When the client calls GET "/math/div/{num1}/{num2}" with num1 as 100 and num2 as 25
+Then the client receives output of division operation response status code of 200
+And match $ == 4

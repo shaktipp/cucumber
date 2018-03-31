@@ -1,0 +1,11 @@
+* URL of Swagger UI = http://localhost:8888/swagger-ui.html
+* Actuator URL :
+	a) http://localhost:8888/actuator/httptrace
+	b) Display environment Info : http://localhost:8888/actuator/env
+	c) Health : http://localhost:8888/actuator/health
+	d) Heap Dump : http://localhost:8888/actuator/health
+	e) Mappings : http://localhost:8888/actuator/mappings
+	f) Metrics : http://localhost:8888/actuator/metrics
+
+* Prometheus URL
+	a) 

@@ -106,6 +106,7 @@ pipeline {
             mail to: "${v_failNotification}",
             subject: "Unstable Jenkins Build: ${currentBuild.fullDisplayName}",
             body: "Build is Unstable due to a few error, URL : ${env.BUILD_URL}"
+        }
         failure {
             mail to: "${v_failNotification}",
             subject: "Failed Jenkins Build: ${currentBuild.fullDisplayName}",

@@ -1,6 +1,7 @@
 def v_bitBucketUrl = 'https://github.com/shaktipp/dmpRepo.git'
+def v_gitHubUrl = 'https://github.com/shaktipp/cucumber.git'
 def v_bitbucketBranchName = 'develop'
-def v_pomFilePath = 'omApmcbMetadataService/pom.xml'
+def v_pomFilePath = 'MathCucumberApp/pom.xml'
 def v_imageName = 'shaktipp/mathcucumber-image'
 def v_dockerfilePath = 'MathCucumberApp/dmp/docker'
 
@@ -21,7 +22,8 @@ pipeline {
 		
 		stage('Checkout') {
 			steps {
-				git credentialsId: 'BitBucket', url: v_bitBucketUrl, branch: v_bitbucketBranchName
+				//git credentialsId: 'BitBucket', url: v_bitBucketUrl, branch: v_bitbucketBranchName
+				git v_gitHubUrl
 			}
 		}
 		stage('Build') {

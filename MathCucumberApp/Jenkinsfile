@@ -58,16 +58,17 @@ pipeline {
 				!**/*.stml,    !**/*.ttml,      !**/*.txn,      !**/*.xhtm,     !**/*.xhtml,   !**/*.class, !**/*.iml, !Checkmarx/Reports/*.*''', fullScanCycle: 10, groupId: '77817e0d-9700-46b5-aa44-16b474ba8416', includeOpenSourceFolders: '', jobStatusOnError: 'FAILURE', osaArchiveIncludePatterns: '*.zip, *.war, *.ear, *.tgz', password: '{AQAAABAAAAAQY8vsvHNzrPNGcSmj4kTwzkcy3DupBli81CPJO+Hv6zU=}', preset: '100000', projectName: 'MathAppUnitTesting', serverUrl: 'https://bnpappwis403.corp.fairisaac.com', sourceEncoding: '1', username: '', vulnerabilityThresholdResult: 'FAILURE'])
 
 			}
-		}
-		stage('Sonar Scan') {
-			steps {
-				sh "mvn -f ${v_pomFilePath} sonar:sonar"
-			}
-		}
+		}		
 		
 		stage('BDD') {
 			steps {
 				sh "mvn -f ${v_pomFilePath} install"
+			}
+		}
+		
+		stage('Sonar Scan') {
+			steps {
+				sh "mvn -f ${v_pomFilePath} sonar:sonar"
 			}
 		}
 

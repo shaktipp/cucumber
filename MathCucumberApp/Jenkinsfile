@@ -12,7 +12,7 @@ def v_failNotification = 'shaktiprasadapanda@fico.com,shaktipp@gmail.com';
 ///////////////////////////////////////////////PLEASE DONT EDIT/DELETE BELOW CODE//////////////////////////////////////////////////////
 pipeline {
 	environment {
-		DOCKER = credentials('GitHub_SPP')
+		DOCKER = credentials('DOCKER_HUB')
 	}
 
 	agent any

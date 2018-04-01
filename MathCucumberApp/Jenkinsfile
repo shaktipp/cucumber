@@ -3,6 +3,7 @@ def v_gitHubUrl = 'https://github.com/shaktipp/cucumber.git'
 def v_bitbucketBranchName = 'develop'
 def v_pomFilePath = 'MathCucumberApp/pom.xml'
 def v_cucumberReportPath = 'MathCucumberApp/target/cucumber.json'
+def v_dockerHubCredentialId = 'DOCKER_HUB'
 def v_imageName = 'shaktipp/mathcucumber-image'
 def v_dockerfilePath = 'MathCucumberApp/dmp/docker'
 def v_successNotification = 'shaktiprasadapanda@fico.com';
@@ -80,7 +81,7 @@ pipeline {
 		}
 		stage('Push Image') {			
 			steps {
-				withDockerRegistry([credentialsId: 'docker-hub-credential', url: 'https://registry.hub.docker.com']) {
+				withDockerRegistry([credentialsId: "${v_dockerHubCredentialId}", url: "https://registry.hub.docker.com"]) {
 				  sh "docker push ${v_imageName}"
 			    }
 			}

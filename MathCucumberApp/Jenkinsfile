@@ -1,14 +1,19 @@
-def v_bitBucketUrl = 'https://github.com/shaktipp/dmpRepo.git'
+def v_bitBucketUrl = 'https://github.com/shaktipp/cucumber.git'
+def v_gitHubUrl = 'https://github.com/shaktipp/cucumber.git'
 def v_bitbucketBranchName = 'develop'
-def v_pomFilePath = 'omApmcbMetadataService/pom.xml'
+def v_pomFilePath = 'MathCucumberApp/pom.xml'
+def v_cucumberReportPath = 'MathCucumberApp/target/cucumber.json'
+def v_dockerHubCredentialId = 'DOCKER_HUB'
 def v_imageName = 'shaktipp/mathcucumber-image'
 def v_dockerfilePath = 'MathCucumberApp/dmp/docker'
+def v_successNotification = 'shaktiprasadapanda@fico.com';
+def v_failNotification = 'shaktiprasadapanda@fico.com,shaktipp@gmail.com';
 
 
 ///////////////////////////////////////////////PLEASE DONT EDIT/DELETE BELOW CODE//////////////////////////////////////////////////////
 pipeline {
 	environment {
-		DOCKER = credentials('GitHub_SPP')
+		DOCKER = credentials('DOCKER_HUB')
 	}
 
 	agent any
@@ -21,7 +26,8 @@ pipeline {
 		
 		stage('Checkout') {
 			steps {
-				git credentialsId: 'BitBucket', url: v_bitBucketUrl, branch: v_bitbucketBranchName
+				//git credentialsId: 'BitBucket', url: v_bitBucketUrl, branch: v_bitbucketBranchName
+				git v_gitHubUrl
 			}
 		}
 		stage('Build') {
@@ -53,7 +59,14 @@ pipeline {
 				!**/*.stml,    !**/*.ttml,      !**/*.txn,      !**/*.xhtm,     !**/*.xhtml,   !**/*.class, !**/*.iml, !Checkmarx/Reports/*.*''', fullScanCycle: 10, groupId: '77817e0d-9700-46b5-aa44-16b474ba8416', includeOpenSourceFolders: '', jobStatusOnError: 'FAILURE', osaArchiveIncludePatterns: '*.zip, *.war, *.ear, *.tgz', password: '{AQAAABAAAAAQY8vsvHNzrPNGcSmj4kTwzkcy3DupBli81CPJO+Hv6zU=}', preset: '100000', projectName: 'MathAppUnitTesting', serverUrl: 'https://bnpappwis403.corp.fairisaac.com', sourceEncoding: '1', username: '', vulnerabilityThresholdResult: 'FAILURE'])
 
 			}
+		}		
+		
+		stage('BDD') {
+			steps {
+				sh "mvn -f ${v_pomFilePath} install"
+			}
 		}
+		
 		stage('Sonar Scan') {
 			steps {
 				sh "mvn -f ${v_pomFilePath} sonar:sonar"
@@ -68,7 +81,7 @@ pipeline {
 		}
 		stage('Push Image') {			
 			steps {
-				withDockerRegistry([credentialsId: 'docker-hub-credential', url: 'https://registry.hub.docker.com']) {
+				withDockerRegistry([credentialsId: "${v_dockerHubCredentialId}", url: "https://registry.hub.docker.com"]) {
 				  sh "docker push ${v_imageName}"
 			    }
 			}
@@ -86,5 +99,27 @@ pipeline {
 		
 
 	}//End of stages	
+	post{
+		always {
+            //generate cucumber reports
+            cucumber "${v_cucumberReportPath}"
+        }
+		success {
+            mail to: "${v_successNotification}",
+            subject: "Success Jenkins Build: ${currentBuild.fullDisplayName}",
+            body: "Build is Successful, URL : ${env.BUILD_URL}"
+        }
+        unstable {
+            mail to: "${v_failNotification}",
+            subject: "Unstable Jenkins Build: ${currentBuild.fullDisplayName}",
+            body: "Build is Unstable due to a few error, URL : ${env.BUILD_URL}"
+        }
+        failure {
+            mail to: "${v_failNotification}",
+            subject: "Failed Jenkins Build: ${currentBuild.fullDisplayName}",
+            body: "Something is wrong with Pipeline Build , URL : ${env.BUILD_URL}"
+        }
+	
+	}//End of post
 		
 }

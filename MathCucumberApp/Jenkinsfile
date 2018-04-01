@@ -1,4 +1,4 @@
-def v_bitBucketUrl = 'https://github.com/shaktipp/dmpRepo.git'
+def v_bitBucketUrl = 'https://github.com/shaktipp/cucumber.git'
 def v_gitHubUrl = 'https://github.com/shaktipp/cucumber.git'
 def v_bitbucketBranchName = 'develop'
 def v_pomFilePath = 'MathCucumberApp/pom.xml'

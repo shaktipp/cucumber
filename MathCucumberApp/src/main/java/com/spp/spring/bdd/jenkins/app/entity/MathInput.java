@@ -20,7 +20,15 @@ public class MathInput
     {
         this.setNum1( num1 );
         this.setNum2( num2 );
-        this.setOperator( operator );        
+        this.setOperator( operator ); 
+        this.setResult(new Long(0));
+    }
+    public MathInput(Long num1,Long num2,String operator,Long result)
+    {
+        this.setNum1( num1 );
+        this.setNum2( num2 );
+        this.setOperator( operator );  
+        this.setResult(result);
     }
     
     

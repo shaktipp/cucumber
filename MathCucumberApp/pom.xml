@@ -147,9 +147,21 @@
 			</testResource>
 		</testResources>
 		<plugins>
+		    <!--Used to generate Main Class in Jar File to lunch java -jar -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+				<execution>
+					<goals>
+						<goal>repackage</goal>
+					</goals>
+					<configuration>
+						<classifier>spring-boot</classifier>
+						<mainClass>com.spp.spring.bdd.jenkins.app.MathCucumberAppApplication</mainClass>
+					</configuration>
+				</execution>
+			</executions>
 			</plugin>
 			
 			<!-- Copy Jar file -->

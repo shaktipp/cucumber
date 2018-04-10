@@ -206,7 +206,7 @@
 							<goal>report</goal>
 						</goals>
 					</execution>
-					<!-- Check Minimum Code Coverage by JaCoCo -->
+					<!-- Check Minimum Code Coverage by JaCoCo 
 					<execution>
 						<id>jacoco-check</id>
 						<goals>
@@ -227,6 +227,7 @@
 							</rules>
 						</configuration>
 					</execution>
+					-->
 				</executions>
 			</plugin>
 

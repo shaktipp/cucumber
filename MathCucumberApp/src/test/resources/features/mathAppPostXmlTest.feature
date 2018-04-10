@@ -14,11 +14,11 @@ Feature: Math Calculation with Input and Output as XML with method=POST
         | 40    |    10 | div      | 
     Then the response has the following attributes:
         | num1  | num2  | operator | result|
-        | 2     |     5 | add      | 7		 |
-        | 12    |    27 | add      | 39		 |
-        | 20    |    15 | sub      | 5		 |
-        | 89    |    19 | sub      | 70		 |
-        | 15    |    10 | mul      | 150	 |
-        | 30    |    20 | mul      | 600	 |
+        | 2     |     5 | add      | 7	   |
+        | 12    |    27 | add      | 39	   |
+        | 20    |    15 | sub      | 5	   |
+        | 89    |    19 | sub      | 70	   |
+        | 15    |    10 | mul      | 150   |	
+        | 30    |    20 | mul      | 60    |
         | 20    |    6  | div      | 3	   |
         | 40    |    10 | div      | 4	   |

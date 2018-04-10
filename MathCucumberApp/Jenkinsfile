@@ -2,19 +2,17 @@ def v_bitBucketUrl = 'https://github.com/shaktipp/cucumber.git'
 def v_gitHubUrl = 'https://github.com/shaktipp/cucumber.git'
 def v_bitbucketBranchName = 'develop'
 def v_pomFilePath = 'MathCucumberApp/pom.xml'
-def v_cucumberReportPath = 'MathCucumberApp/target/cucumber.json'
-def v_dockerHubCredentialId = 'DOCKER_HUB'
 def v_imageName = 'shaktipp/mathcucumber-image'
 def v_dockerfilePath = 'MathCucumberApp/dmp/docker'
+def v_cucumberReportPath = 'MathCucumberApp/target/cucumber.json'
+def v_junitReportPath = 'omApmcbMetadataService/target/surefire-reports/*.xml'
+def v_htmlReportPath = 'omApmcbMetadataService/target/site/jacoco/'
 def v_successNotification = 'shaktiprasadapanda@fico.com';
 def v_failNotification = 'shaktiprasadapanda@fico.com,shaktipp@gmail.com';
 
-
-///////////////////////////////////////////////PLEASE DONT EDIT/DELETE BELOW CODE//////////////////////////////////////////////////////
+/////////////////////////////////////////////PLEASE DONT EDIT/DELETE BELOW CODE//////////////////////////////////////////////////////
 pipeline {
-	environment {
-		DOCKER = credentials('DOCKER_HUB')
-	}
+	
 
 	agent any
 
@@ -61,9 +59,9 @@ pipeline {
 			}
 		}		
 		
-		stage('BDD') {
+		stage('Cucumber') {
 			steps {
-				sh "mvn -f ${v_pomFilePath} install"
+				sh "mvn -f ${v_pomFilePath} verify"
 			}
 		}
 		
@@ -81,7 +79,7 @@ pipeline {
 		}
 		stage('Push Image') {			
 			steps {
-				withDockerRegistry([credentialsId: "${v_dockerHubCredentialId}", url: "https://registry.hub.docker.com"]) {
+				withDockerRegistry([credentialsId: 'docker-hub-credential', url: "https://registry.hub.docker.com"]) {
 				  sh "docker push ${v_imageName}"
 			    }
 			}
@@ -103,6 +101,17 @@ pipeline {
 		always {
             //generate cucumber reports
             cucumber "${v_cucumberReportPath}"
+            junit "${v_junitReportPath}"
+            
+            // publish html
+	        publishHTML( target: [
+	            allowMissing: false,
+	            alwaysLinkToLastBuild: false,
+	            keepAll: true,
+	            reportDir: "${v_htmlReportPath}",
+	            reportFiles: 'index.html',
+	            reportName: 'JaCoCo Report'
+	          ])
         }
 		success {
             mail to: "${v_successNotification}",

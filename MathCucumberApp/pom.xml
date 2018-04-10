@@ -83,7 +83,7 @@
 			<artifactId>simpleclient_spring_boot</artifactId>
 			<version>0.3.0</version>
 		</dependency>
-		<!-- For prometheus dependency end -->
+
 
 		<!-- swagger2 -->
 		<dependency>
@@ -104,11 +104,7 @@
 			<version>2.9.4</version>
 		</dependency>
 
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
-		</dependency>
+
 
 		<!-- Cucumber -->
 		<dependency>
@@ -150,12 +146,26 @@
 				</excludes>
 			</testResource>
 		</testResources>
+
+
 		<plugins>
+			<!--Used to generate Main Class in Jar File to lunch java JarLauncher -->
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+						<configuration>
+							<classifier>spring-boot</classifier>
+							<mainClass>com.spp.spring.bdd.jenkins.app.MathCucumberAppApplication</mainClass>
+						</configuration>
+					</execution>
+				</executions>
 			</plugin>
-			
+
 			<!-- Copy Jar file -->
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -165,13 +175,14 @@
 					<outputDirectory>dmp/docker</outputDirectory>
 				</configuration>
 			</plugin>
-			
+
 			<!-- For Sonar Qube Plugin -->
 			<plugin>
 				<groupId>org.sonarsource.scanner.maven</groupId>
 				<artifactId>sonar-maven-plugin</artifactId>
 				<version>3.4.0.905</version>
 			</plugin>
+
 			<!-- For Code Coverage Plugin -->
 			<plugin>
 				<groupId>org.jacoco</groupId>
@@ -194,6 +205,27 @@
 						<goals>
 							<goal>report</goal>
 						</goals>
+					</execution>
+					<!-- Check Minimum Code Coverage by JaCoCo -->
+					<execution>
+						<id>jacoco-check</id>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<rules>
+								<rule>
+									<element>PACKAGE</element>
+									<limits>
+										<limit>
+											<counter>LINE</counter>
+											<value>COVEREDRATIO</value>
+											<minimum>0.6</minimum>
+										</limit>
+									</limits>
+								</rule>
+							</rules>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>
@@ -255,43 +287,7 @@
 		</plugins>
 	</build>
 
-	<repositories>
-		<repository>
-			<id>spring-snapshots</id>
-			<name>Spring Snapshots</name>
-			<url>https://repo.spring.io/snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>https://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
 
-	<pluginRepositories>
-		<pluginRepository>
-			<id>spring-snapshots</id>
-			<name>Spring Snapshots</name>
-			<url>https://repo.spring.io/snapshot</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</pluginRepository>
-		<pluginRepository>
-			<id>spring-milestones</id>
-			<name>Spring Milestones</name>
-			<url>https://repo.spring.io/milestone</url>
-			<snapshots>
-				<enabled>false</enabled>
-			</snapshots>
-		</pluginRepository>
-	</pluginRepositories>
 
 
 </project>

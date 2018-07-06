@@ -1,6 +1,6 @@
 def v_bitBucketUrl = 'https://github.com/shaktipp/cucumber.git'
 def v_gitHubUrl = 'https://github.com/shaktipp/cucumber.git'
-def v_bitbucketBranchName = 'develop'
+def v_bitbucketBranchName = 'master'
 def v_pomFilePath = 'MathCucumberApp/pom.xml'
 def v_imageName = 'omfico/mathcucumber-image'
 def v_dockerfilePath = 'MathCucumberApp/dmp/docker'

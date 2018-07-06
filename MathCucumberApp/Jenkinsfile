@@ -9,6 +9,7 @@ def v_junitReportPath = 'MathCucumberApp/target/surefire-reports/*.xml'
 def v_htmlReportPath = 'MathCucumberApp/target/site/jacoco/'
 def v_successNotification = 'shaktiprasadapanda@fico.com';
 def v_failNotification = 'shaktiprasadapanda@fico.com,shaktipp@gmail.com';
+def v_jobName = currentBuild.fullDisplayName
 
 /////////////////////////////////////////////PLEASE DONT EDIT/DELETE BELOW CODE//////////////////////////////////////////////////////
 pipeline {
@@ -102,6 +103,10 @@ pipeline {
             //generate cucumber reports
             cucumber "${v_cucumberReportPath}"
             junit "${v_junitReportPath}"
+			
+			script {
+                currentBuild.result = currentBuild.currentResult
+            }
             
             // publish html
 	        publishHTML( target: [
@@ -116,7 +121,7 @@ pipeline {
 		success {
             mail to: "${v_successNotification}",
             subject: "Success Jenkins Build: ${currentBuild.fullDisplayName}",
-            body: "Build is Successful, URL : ${env.BUILD_URL}"
+            emailext body: '''${SCRIPT, template="om-dm-email-groovy-v2.template"}''',
         }
         unstable {
             mail to: "${v_failNotification}",
@@ -126,7 +131,7 @@ pipeline {
         failure {
             mail to: "${v_failNotification}",
             subject: "Failed Jenkins Build: ${currentBuild.fullDisplayName}",
-            body: "Something is wrong with Pipeline Build , URL : ${env.BUILD_URL}"
+            emailext body: '''${SCRIPT, template="om-dm-email-groovy-v2.template"}''',
         }
 	
 	}//End of post

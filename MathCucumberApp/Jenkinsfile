@@ -119,9 +119,9 @@ pipeline {
 	          ])
         }
 		success {
-            mail to: "${v_successNotification}",
-            subject: "Success Jenkins Build: ${currentBuild.fullDisplayName}",
             emailext body: '''${SCRIPT, template="om-dm-email-groovy-v2.template"}''',
+			subject: "Success Jenkins Build: ${currentBuild.fullDisplayName}",
+			mail to: "${v_successNotification}"          
         }
         unstable {
             mail to: "${v_failNotification}",
@@ -129,9 +129,11 @@ pipeline {
             body: "Build is Unstable due to a few error, URL : ${env.BUILD_URL}"
         }
         failure {
-            mail to: "${v_failNotification}",
-            subject: "Failed Jenkins Build: ${currentBuild.fullDisplayName}",
             emailext body: '''${SCRIPT, template="om-dm-email-groovy-v2.template"}''',
+			subject: "Failed Jenkins Build: ${currentBuild.fullDisplayName}",
+			mail to: "${v_failNotification}"
+            
+
         }
 	
 	}//End of post

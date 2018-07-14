@@ -118,7 +118,7 @@ pipeline {
 	    script {
                 currentBuild.result = currentBuild.currentResult
             }
-	    emailext body: '''${SCRIPT, template="email-groovy.template"}''',
+	    emailext body: '''${SCRIPT, template="om-dm-email-groovy-v2.template"}''',
             mimeType: 'text/html',
             subject: "[Jenkins] ${v_jobName}",
             to: "${v_mailRecipients}",

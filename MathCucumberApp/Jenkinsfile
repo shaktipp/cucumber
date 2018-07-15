@@ -51,7 +51,7 @@ pipeline {
 		
 		stage('Sonar Scan') {
 			steps {
-				sh "mvn -f ${v_pomFilePath} sonar:sonar"
+				sh "mvn -f ${v_pomFilePath} sonar:sonar12"
 			}
 		}
        

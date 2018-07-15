@@ -36,7 +36,7 @@ pipeline {
 		}
 		stage('Test') {
 			steps {
-				sh "mvn -f ${v_pomFilePath} -Dmaven.test.failure.ignore=true test"
+				sh "mvn -f ${v_pomFilePath} -Dmaven.test.failure.ignore=flase test"
 				junit '**/target/surefire-reports/TEST-*.xml'
 				archive 'target/*.jar'
 			}

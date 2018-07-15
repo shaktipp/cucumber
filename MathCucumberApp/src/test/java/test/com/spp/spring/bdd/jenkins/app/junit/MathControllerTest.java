@@ -69,7 +69,7 @@ public class MathControllerTest
         ResponseEntity<Long> response = restTemplate.exchange("/math/mul/5/4", HttpMethod.GET,null, Long.class);
         Long result = response.getBody();
         logger.info("Result found=" + result);
-        Assert.assertEquals(new Long(20), result);
+        Assert.assertEquals(new Long(21), result);
         logger.info("Exit");
         
     }
@@ -82,7 +82,7 @@ public class MathControllerTest
         ResponseEntity<Long> response = restTemplate.exchange("/math/div/10/4", HttpMethod.GET,null, Long.class);
         Long result = response.getBody();
         logger.info("Result found=" + result);
-        Assert.assertEquals(new Long(2), result);
+        Assert.assertEquals(new Long(2.5), result);
         logger.info("Exit");
         
     }

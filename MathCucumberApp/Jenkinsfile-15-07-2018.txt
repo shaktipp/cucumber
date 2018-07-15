@@ -1,0 +1,134 @@
+def v_bitBucketUrl = 'https://github.com/shaktipp/cucumber.git'
+def v_gitHubUrl = 'https://github.com/shaktipp/cucumber.git'
+def v_bitbucketBranchName = 'master'
+def v_pomFilePath = 'MathCucumberApp/pom.xml'
+def v_imageName = 'omfico/mathcucumber-image'
+def v_dockerfilePath = 'MathCucumberApp/dmp/docker'
+def v_cucumberReportPath = 'MathCucumberApp/target/cucumber.json'
+def v_junitReportPath = 'MathCucumberApp/target/surefire-reports/*.xml'
+def v_htmlReportPath = 'MathCucumberApp/target/site/jacoco/'
+def v_mailRecipients = 'shaktiprasadapanda@fico.com';
+//def v_failNotification = 'shaktiprasadapanda@fico.com,shaktipp@gmail.com';
+def v_jobName = currentBuild.fullDisplayName
+
+/////////////////////////////////////////////PLEASE DONT EDIT/DELETE BELOW CODE//////////////////////////////////////////////////////
+pipeline {
+	
+
+	agent any
+
+	tools {
+		maven 'Maven352'
+	}
+	
+ 	stages {
+		
+		stage('Checkout') {
+			steps {
+				//git credentialsId: 'BitBucket', url: v_bitBucketUrl, branch: v_bitbucketBranchName
+				git v_gitHubUrl
+			}
+		}
+		stage('Build') {
+			steps {
+ 				sh "mvn -f ${v_pomFilePath} clean compile"
+			}
+		}
+		stage('Test') {
+			steps {
+				sh "mvn -f ${v_pomFilePath} test"
+				junit '**/target/surefire-reports/TEST-*.xml'
+				archive 'target/*.jar'
+			}
+		}
+		
+		stage('Package and Checkmarx') {
+			steps {
+				sh "mvn -f ${v_pomFilePath} package"
+				step([$class: 'CxScanBuilder', comment: 'Checkmark Static Code Analyss', credentialsId: '', excludeFolders: '', excludeOpenSourceFolders: '', exclusionsSetting: 'job', failBuildOnNewResults: false, failBuildOnNewSeverity: 'HIGH', filterPattern: 	'''!**/_cvs/**/*, !**/.svn/**/*,   !**/.hg/**/*,   !**/.git/**/*,  !**/.bzr/**/*, !**/bin/**/*,
+				!**/obj/**/*,  !**/backup/**/*, !**/.idea/**/*, !**/*.DS_Store, !**/*.ipr,     !**/*.iws,
+				!**/*.bak,     !**/*.tmp,       !**/*.aac,      !**/*.aif,      !**/*.iff,     !**/*.m3u, !**/*.mid, !**/*.mp3,
+				!**/*.mpa,     !**/*.ra,        !**/*.wav,      !**/*.wma,      !**/*.3g2,     !**/*.3gp, !**/*.asf, !**/*.asx,
+				!**/*.avi,     !**/*.flv,       !**/*.mov,      !**/*.mp4,      !**/*.mpg,     !**/*.rm,  !**/*.swf, !**/*.vob,
+				!**/*.wmv,     !**/*.bmp,       !**/*.gif,      !**/*.jpg,      !**/*.png,     !**/*.psd, !**/*.tif, !**/*.swf,
+				 !**/*.rar,      !**/*.exe,      !**/*.dll,     !**/*.pdb, !**/*.7z,  !**/*.gz,
+				!**/*.tar.gz,  !**/*.tar,       !**/*.gz,       !**/*.ahtm,     !**/*.ahtml,   !**/*.fhtml, !**/*.hdm,
+				!**/*.hdml,    !**/*.hsql,      !**/*.ht,       !**/*.hta,      !**/*.htc,     !**/*.htd, 
+				!**/*.htmls,   !**/*.ihtml,     !**/*.mht,      !**/*.mhtm,     !**/*.mhtml,   !**/*.ssi, !**/*.stm,
+				!**/*.stml,    !**/*.ttml,      !**/*.txn,      !**/*.xhtm,     !**/*.xhtml,   !**/*.class, !**/*.iml, !Checkmarx/Reports/*.*''', fullScanCycle: 10, groupId: '77817e0d-9700-46b5-aa44-16b474ba8416', includeOpenSourceFolders: '', jobStatusOnError: 'FAILURE', osaArchiveIncludePatterns: '*.zip, *.war, *.ear, *.tgz', password: '{AQAAABAAAAAQY8vsvHNzrPNGcSmj4kTwzkcy3DupBli81CPJO+Hv6zU=}', preset: '100000', projectName: 'MathAppUnitTesting', serverUrl: 'https://bnpappwis403.corp.fairisaac.com', sourceEncoding: '1', username: '', vulnerabilityThresholdResult: 'FAILURE'])
+
+			}
+		}
+		
+		
+		stage('Cucumber') {
+			steps {
+				sh "mvn -f ${v_pomFilePath} verify"
+			}
+		}
+		
+		stage('Sonar Scan') {
+			steps {
+				sh "mvn -f ${v_pomFilePath} sonar:sonar"
+			}
+		}
+        
+		stage('Build Image') {
+			steps {				
+				sh "docker build -t ${v_imageName} ${v_dockerfilePath}"
+			}
+
+		}
+		stage('Push Image') {			
+			steps {
+				withDockerRegistry([credentialsId: 'docker-hub-credential', url: "https://index.docker.io/v1/"]) {
+				  sh "docker push ${v_imageName}"
+			    }
+			}
+
+		}
+		
+		stage('Create ZIP') {
+			steps {				
+				dir("./${v_dockerfilePath}/"){
+					sh 'zip archeType.zip DMP-INF/*'
+					sh 'mv archeType.zip ../../../'
+				}//End of dir()	
+			}
+		}
+		
+		
+
+	}//End of stages	
+	post{
+		always {
+            //generate cucumber reports
+            cucumber "${v_cucumberReportPath}"
+            junit "${v_junitReportPath}"			
+			
+            
+            // publish html
+	        publishHTML( target: [
+	            allowMissing: false,
+	            alwaysLinkToLastBuild: false,
+	            keepAll: true,
+	            reportDir: "${v_htmlReportPath}",
+	            reportFiles: 'index.html',
+	            reportName: 'JaCoCo Report'
+	          ])
+			  
+	    script {
+                currentBuild.result = currentBuild.currentResult
+        }
+	    emailext body: '''${SCRIPT, template="email-groovy.template"}''',
+            mimeType: 'text/html',
+            subject: "[Jenkins] ${v_jobName}",
+            to: "${v_mailRecipients}",
+            replyTo: "${v_mailRecipients}",
+            recipientProviders: [[$class: 'CulpritsRecipientProvider']]
+        } // End of always block
+
+	
+	}//End of post
+		
+}

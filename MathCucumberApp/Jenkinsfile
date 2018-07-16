@@ -6,7 +6,8 @@ def v_imageName = 'omfico/mathcucumber-image'
 def v_dockerfilePath = 'MathCucumberApp/dmp/docker'
 def v_cucumberReportPath = 'MathCucumberApp/target/cucumber.json'
 def v_junitReportPath = 'MathCucumberApp/target/surefire-reports/*.xml'
-def v_htmlReportPath = 'MathCucumberApp/target/site/jacoco/'
+def v_jacocoReportPath = 'MathCucumberApp/target/site/jacoco/'
+def v_pmdReportPath = 'MathCucumberApp/target/site/'
 def v_mailRecipients = 'shaktiprasadapanda@fico.com';
 //def v_failNotification = 'shaktiprasadapanda@fico.com,shaktipp@gmail.com';
 def v_jobName = currentBuild.fullDisplayName
@@ -54,6 +55,12 @@ pipeline {
 				sh "mvn -f ${v_pomFilePath} sonar:sonar"
 			}
 		}
+		
+		stage('PMD Report') {
+			steps {	
+				sh "mvn -f ${v_pomFilePath} site -Ddependency.locations.enabled=false"
+			}
+		}
        
 		
 
@@ -65,26 +72,36 @@ pipeline {
             junit "${v_junitReportPath}"			
 			
             
-            // publish html
-	        publishHTML( target: [
-	            allowMissing: false,
-	            alwaysLinkToLastBuild: false,
-	            keepAll: true,
-	            reportDir: "${v_htmlReportPath}",
-	            reportFiles: 'index.html',
-	            reportName: 'JaCoCo Report'
-	          ])
+			// publish JaCoCo Report
+			publishHTML( target: [
+				allowMissing: false,
+				alwaysLinkToLastBuild: false,
+				keepAll: true,
+				reportDir: "${v_jacocoReportPath}",
+				reportFiles: 'index.html',
+				reportName: 'JaCoCo Report'
+			])
+			
+			// publish PMD Report
+			publishHTML( target: [
+				allowMissing: false,
+				alwaysLinkToLastBuild: false,
+				keepAll: true,
+				reportDir: "${v_pmdReportPath}",
+				reportFiles: 'project-reports.html',
+				reportName: 'PMD Report'
+			])
 			  
-	    script {
-                currentBuild.result = currentBuild.currentResult
-        }
-	    emailext body: '''${SCRIPT, template="email-groovy.template"}''',
-            mimeType: 'text/html',
-            subject: "[Jenkins] ${v_jobName}",
-            to: "${v_mailRecipients}",
-            replyTo: "${v_mailRecipients}",
-            recipientProviders: [[$class: 'CulpritsRecipientProvider']]
-        } // End of always block
+			script {
+					currentBuild.result = currentBuild.currentResult
+			}
+			emailext body: '''${SCRIPT, template="email-groovy.template"}''',
+				mimeType: 'text/html',
+				subject: "[Jenkins] ${v_jobName}",
+				to: "${v_mailRecipients}",
+				replyTo: "${v_mailRecipients}",
+				recipientProviders: [[$class: 'CulpritsRecipientProvider']]
+		} // End of always block
 
 	
 	}//End of post

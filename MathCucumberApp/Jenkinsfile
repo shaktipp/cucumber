@@ -59,6 +59,7 @@ pipeline {
 		stage('PMD Report') {
 			steps {	
 				sh "mvn -f ${v_pomFilePath} site -Ddependency.locations.enabled=false"
+				archive 'target/site/**/*.*'
 			}
 		}
        

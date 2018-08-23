@@ -17,6 +17,11 @@ pipeline {
 	
 
 	agent any
+	
+	options { 
+	    disableConcurrentBuilds() 
+	}
+
 
 	tools {
 		jdk 'jdk8'
